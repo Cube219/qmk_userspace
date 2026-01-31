@@ -140,8 +140,14 @@ void cycle_dpi(void) {
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     mouse_report = pointing_device_task_user(mouse_report);
     if (is_drag_scroll) {
+        // CUBE_MODIFIED_BEGIN : Added threshold in drag scroll
+#if 0
         scroll_accumulated_h += (float)mouse_report.x / PLOOPY_DRAGSCROLL_DIVISOR_H;
         scroll_accumulated_v += (float)mouse_report.y / PLOOPY_DRAGSCROLL_DIVISOR_V;
+#endif
+        scroll_accumulated_h += (float)(abs(mouse_report.x) > PLOOPY_DRAGSCROLL_THRESHOLD_H ? mouse_report.x : 0) / PLOOPY_DRAGSCROLL_DIVISOR_H;
+        scroll_accumulated_v += (float)(abs(mouse_report.y) > PLOOPY_DRAGSCROLL_THRESHOLD_V ? mouse_report.y : 0) / PLOOPY_DRAGSCROLL_DIVISOR_V;
+        // CUBE_MODIFIED_END : Added threshold in drag scroll
 
         // Assign integer parts of accumulated scroll values to the mouse report
         mouse_report.h = (int8_t)scroll_accumulated_h;
